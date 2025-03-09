@@ -3,7 +3,7 @@ import Card from './Card'
 import axios from 'axios'
 import Pagination from './Pagination'
 
-const Cards = () => {
+const Cards = ({watchlists,addToWatchList, removeFromWatchList}) => {
     const [movies, setMovies] = useState([]);
     const [page_no, setPage_no] = useState(1);
 
@@ -32,7 +32,7 @@ const Cards = () => {
         <div className='text-center text-2xl font-bold '> Trending Movies</div>
         <div className='flex flex-wrap justify-center '>
             {movies.map((movie) => (
-                <Card poster_path={movie.poster_path} title={movie.title}/>
+                <Card movie={movie} watchlists={watchlists} addToWatchList={addToWatchList} removeFromWatchList={removeFromWatchList} poster_path={movie.poster_path} title={movie.title}/>
             ))}
             
             
