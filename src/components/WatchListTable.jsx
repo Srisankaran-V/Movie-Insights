@@ -1,7 +1,16 @@
 import React from 'react'
+import { genres } from '../utilities/genres.js'
 
-const WatchListTable = ({ watchlist}) => {
+const WatchListTable = ({ watchlist, removeFromWatchList}) => {
+  
+  let genreids = watchlist.genre_ids;
+  if(genreids.length > 3){
+    genreids = genreids.slice(0,3);
+  }
+  
+
     
+  genres[watchlist.genre_ids[0]]
   return (
     <>
         <tr>
@@ -14,8 +23,12 @@ const WatchListTable = ({ watchlist}) => {
             </td>
             <td>{watchlist.vote_average}</td>
             <td>{watchlist.popularity}</td>
-            <td>Action</td>
-            <td className='text-red-500'>delete</td>
+            <td>{genreids.map((genreid)=>(
+                <div className='inline-block p-1 bg-gray-500 m-1 rounded-lg text-white '>{genres[genreid]}</div>
+            ))}</td>
+            <td className='text-red-500 hover:cursor-pointer' >
+              <div onClick={()=>removeFromWatchList(watchlist)}>delete</div>
+            </td>
         
         </tr>
     </>

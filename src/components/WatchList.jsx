@@ -1,12 +1,16 @@
 
-import React ,{useState} from 'react'
+import React ,{useEffect, useState} from 'react'
 import WatchListTable from './WatchListTable'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons';
+import { genres } from '../utilities/genres.js'
 
-const WatchList = ({watchlists, setWatchLists}) => {
+
+const WatchList = ({watchlists, setWatchLists, removeFromWatchList}) => {
   console.log(watchlists);
   const [searchMovie, setSearchMovie] = useState('');
+  const [allGenres, setAllGenres] = useState(['All Genres']);
+  const [currGenre, setCurrGenre] = useState('All Genres');
 
   let handleSearch = (e)=>{
     setSearchMovie(e.target.value);
@@ -23,11 +27,34 @@ const WatchList = ({watchlists, setWatchLists}) => {
     })
     setWatchLists([...sortedDec])
   }
+
+  let handleGenreColor = (genre)=>{
+    setCurrGenre(genre);
+
+  }
+
+
+  
+  useEffect(() => {
+    const uniqueGenres = new Set();
+  
+    watchlists.forEach((watchlist) => {
+      watchlist.genre_ids.forEach((id) => uniqueGenres.add(genres[id]));
+    });
+  
+    setAllGenres(["All Genres", ...uniqueGenres]); // Always include "All Genres"
+  }, [watchlists]); // Runs only when watchlists change
+  
+  console.log(allGenres);
   return (
     <>
-      <div className='flex flex-wrap justify-center m-4'>
-        <div className='flex font-bold items-center text-white bg-blue-500 rounded-lg mx-4 w-[9rem] h-[3rem] justify-center'>Actions</div>
-        <div className='flex font-bold items-center text-white bg-gray-400 rounded-lg mx-4 w-[9rem] h-[3rem] justify-center'>Actions</div>
+      <div className='flex flex-wrap justify-center m-4 p-4'>
+          <div className='flex flex-wrap justify-center gap-2'>
+          {allGenres.map((genre)=>{
+             return <div onClick={()=>handleGenreColor(genre)} className={currGenre == genre ? 'flex font-bold items-center text-white bg-blue-500 rounded-lg mx-2  w-[9rem] h-[3rem] justify-center hover:cursor-pointer' : 'flex font-bold items-center text-white bg-gray-500 rounded-lg mx-2  w-[9rem] h-[3rem] justify-center hover:cursor-pointer'}>{genre} </div>
+          })
+          }</div>
+
       
       </div>
 
@@ -60,10 +87,15 @@ const WatchList = ({watchlists, setWatchLists}) => {
             </thead>
             <tbody>
               {watchlists.filter((movie)=>{
+                if(currGenre == 'All Genres'){
+                  return true;
+                }
+                return movie.genre_ids.some((gen_id) => genres[gen_id] === currGenre);
+              }).filter((movie)=>{
                 return movie.title.toLowerCase().includes(searchMovie.toLocaleLowerCase())
               }).map((watchlist)=>(
 
-                <WatchListTable  watchlist={watchlist}/>
+                <WatchListTable  watchlist={watchlist} removeFromWatchList={removeFromWatchList}/>
               ))}
           </tbody>
           </table>
